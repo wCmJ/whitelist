@@ -3,7 +3,7 @@
 
 function log()
 {
-	path="/opt/lyou/caxis/restrictedshell/utils/whitelist/whitelistLog"
+	path="/opt/lyou/c/restrictedshell/utils/whitelist/whitelistLog"
 	echo $1 >> $path 2>&1
 
 }
@@ -299,7 +299,7 @@ function checkServerIP()
 #--- -------- ---------------------------------------------
 function checkW()
 {
-	PGPASSWORD=lyou@12#$ psql -U postgres postgres -c 'select * from ca_wsp.whitelistswitch' > status
+	PGPASSWORD=lyou@12#$ psql -U postgres postgres -c 'select * from ca_w.whitelistswitch' > status
 	result=$(sed '3!d' status)
 	if [ $result -eq 0  ]
 	then
@@ -308,7 +308,7 @@ function checkW()
         echo "whitelist is open"
 	fi
 	
-	PGPASSWORD=lyou@12#$	psql -U postgres postgres -c 'select * from ca_wsp.whitelistconfig' > allIP
+	PGPASSWORD=lyou@12#$	psql -U postgres postgres -c 'select * from ca_w.whitelistconfig' > allIP
 	echo "IP in whitelist:"
 	grep -oP '([1-9]|[1-9][0-9]|[1-9][0-9][0-9])\.\d+\.\d+\.\d+\/\d+' allIP
 	
@@ -328,7 +328,7 @@ function addW()
 	read IP
 	if [[ $IP =~ ^([0-9]+\.){3}[0-9]+/[0-9]+$ ]]
 	then		
-		PGPASSWORD=lyou@12#$	psql -U postgres postgres -qc "insert into ca_wsp.whitelistconfig values('$IP')"
+		PGPASSWORD=lyou@12#$	psql -U postgres postgres -qc "insert into ca_w.whitelistconfig values('$IP')"
 		if [[ $? -eq 0 ]]
 		then 
 			echo success
@@ -350,7 +350,7 @@ function addW()
 #--- -------- ---------------------------------------------
 function delW()
 {
-	PGPASSWORD=lyou@12#$	psql -U postgres postgres -c 'select * from ca_wsp.whitelistconfig' > content
+	PGPASSWORD=lyou@12#$	psql -U postgres postgres -c 'select * from ca_w.whitelistconfig' > content
 	cat content | awk '{print $1}' | grep -E '^[0-9]+' > iplist
 	
 	count=$(cat iplist | wc -l) 
@@ -362,7 +362,7 @@ function delW()
 	then 	
 		if grep -qnx "$IP" iplist 
 		then
-			PGPASSWORD=lyou@12#$	psql -U postgres postgres -qc "delete from ca_wsp.whitelistconfig where subnet like '%$IP%'"
+			PGPASSWORD=lyou@12#$	psql -U postgres postgres -qc "delete from ca_w.whitelistconfig where subnet like '%$IP%'"
 			if [[ $? -eq 0 ]]
 			then 
 				echo success
@@ -391,7 +391,7 @@ function delW()
 function enableW()
 {
 	
-	PGPASSWORD=lyou@12#$ psql -U postgres postgres -qc "update ca_wsp.whitelistswitch set enableflag='1'"
+	PGPASSWORD=lyou@12#$ psql -U postgres postgres -qc "update ca_w.whitelistswitch set enableflag='1'"
 	if [[ $? -eq 0 ]]
 	then 
 		echo success
@@ -401,7 +401,7 @@ function enableW()
 }
 function disableW()
 {
-	PGPASSWORD=lyou@12#$ psql -U postgres postgres -qc "update ca_wsp.whitelistswitch set enableflag='0'"
+	PGPASSWORD=lyou@12#$ psql -U postgres postgres -qc "update ca_w.whitelistswitch set enableflag='0'"
 	if [[ $? -eq 0 ]]
 	then 
 		echo success
@@ -432,16 +432,16 @@ then
 	then 
 		iptables-restore < /opt/lyou/m/system-utils/whitelist-rules/rules
 		touch /opt/lyou/m/system-utils/whitelist-rules/flag
-#		sed 's/"//g' /opt/lyou/caxis/restrictedshell/utils/whitelist/rules > /opt/lyou/caxis/restrictedshell/utils/whitelist/RULES
-#		sed 's/\\n/$/g' /opt/lyou/caxis/restrictedshell/utils/whitelist/RULES > /opt/lyou/caxis/restrictedshell/utils/whitelist/RULESCOPY
-#		awk 'BEGIN{FS="$"}{for(i=1;i<NF;i++){print $i}}' /opt/lyou/caxis/restrictedshell/utils/whitelist/RULESCOPY > /opt/lyou/caxis/restrictedshell/utils/whitelist/ipta
-#		iptables-restore < /opt/lyou/caxis/restrictedshell/utils/whitelist/ipta
-#		rm -rf /opt/lyou/caxis/restrictedshell/utils/whitelist/rules /opt/lyou/caxis/restrictedshell/utils/whitelist/RULES /opt/lyou/caxis/restrictedshell/utils/whitelist/RULESCOPY /opt/lyou/caxis/restrictedshell/utils/whitelist/ipta
-#		touch /opt/lyou/caxis/restrictedshell/utils/whitelist/flag
+#		sed 's/"//g' /opt/lyou/c/restrictedshell/utils/whitelist/rules > /opt/lyou/c/restrictedshell/utils/whitelist/RULES
+#		sed 's/\\n/$/g' /opt/lyou/c/restrictedshell/utils/whitelist/RULES > /opt/lyou/c/restrictedshell/utils/whitelist/RULESCOPY
+#		awk 'BEGIN{FS="$"}{for(i=1;i<NF;i++){print $i}}' /opt/lyou/c/restrictedshell/utils/whitelist/RULESCOPY > /opt/lyou/c/restrictedshell/utils/whitelist/ipta
+#		iptables-restore < /opt/lyou/c/restrictedshell/utils/whitelist/ipta
+#		rm -rf /opt/lyou/c/restrictedshell/utils/whitelist/rules /opt/lyou/c/restrictedshell/utils/whitelist/RULES /opt/lyou/c/restrictedshell/utils/whitelist/RULESCOPY /opt/lyou/c/restrictedshell/utils/whitelist/ipta
+#		touch /opt/lyou/c/restrictedshell/utils/whitelist/flag
 
 	fi
 	#get server IP	
-	serverHost=$(grep "external_secure" /opt/polycom/mea/settings.json | awk  '{print $2}' | awk 'BEGIN{FS="\""}{print $2}'| awk 'BEGIN{FS="//"}{print $2}')	
+	serverHost=$(grep "external_secure" /opt/lyou/m/settings.json | awk  '{print $2}' | awk 'BEGIN{FS="\""}{print $2}'| awk 'BEGIN{FS="//"}{print $2}')	
 	serverIP=$(host $serverHost|awk '{print $4}')
 	localhostIP="127.0.0.1"
 
@@ -486,8 +486,8 @@ then
 	fi
 	
 
-	iptables-save > /opt/lyou/mea/system-utils/whitelist-rules/rules
-	chmod a+rwx /opt/lyou/mea/system-utils/whitelist-rules/rules
+	iptables-save > /opt/lyou/m/system-utils/whitelist-rules/rules
+	chmod a+rwx /opt/lyou/m/system-utils/whitelist-rules/rules
 	service iptables save > sis
 	rm -rf sis
 	
