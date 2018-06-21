@@ -15,7 +15,8 @@ grep -qwF "word" file
 #-n: prefix each matching line with the line number
 #-i: perform a case-insensitive match
 #-r: search to subdirectories
-#-w: will ignore number and character, but keep ~, !, @, #, $, %, ^, &, *, (, ), -, +
+#-w: will ignore letters, digits, and underscores, but keep ~, !, @, #, $, %, ^, &, *, (, ), -, +
+#-v: select non-matching lines
 #fgrep is the same as running grep -F. In this mode, grep evaluates your PATTERN string as a "fixed string".
 
 
