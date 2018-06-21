@@ -1,9 +1,9 @@
 #!/bin/bash
-# mea 
+ 
 
 function log()
 {
-	path="/opt/polycom/caxis/restrictedshell/utils/whitelist/whitelistLog"
+	path="/opt/lyou/caxis/restrictedshell/utils/whitelist/whitelistLog"
 	echo $1 >> $path 2>&1
 
 }
@@ -76,11 +76,11 @@ function addChain()
 
 
 # === FUNCTION ===================================================
-# Name		:addMea
+# Name		:addM
 #
-# Descript	:addMea ip to whitelist
+# Descript	:addM ip to whitelist
 # === ======== ===================================================
-function addMea ()
+function addM ()
 {
 	addChain
 	while :
@@ -104,12 +104,12 @@ function addMea ()
 
 
 # === FUNCTION ===================================================
-# Name		:resetMea
+# Name		:resetM
 #
 #
 # Descript	:stop whitelist
 # === ======== ===================================================
-function resetMea ()
+function resetM ()
 {
 	iptables -L -n > record
 	n=$(grep -En '^ACCESS' record | grep -Eo '^[^:]+')
@@ -143,11 +143,11 @@ function resetMea ()
 }
 
 # === FUNCTION ===================================================
-# Name		:listMea
+# Name		:listM
 #
 # Descript	:show all IPs of whitelist
 # === ======== ===================================================
-function listMea ()
+function listM ()
 {
 	iptables -L -n > record
 	if  grep -qn "^ACCESS*" record 
@@ -171,11 +171,11 @@ function listMea ()
 
 
 # === FUNCTION ===================================================
-# Name		:delMea
+# Name		:delM
 #
 # Descript	:delete specified ip from whitelist
 # === ======== ===================================================
-function delMea ()
+function delM ()
 {
 	while :
 	do
@@ -219,7 +219,7 @@ function delMea ()
 	done
 	
 }
-function enableMea()
+function enableM()
 {
 	addChain
 	iptables -L -n > record
@@ -237,7 +237,7 @@ function enableMea()
 	fi
 	rm -rf record
 }
-function disableMea()
+function disableM()
 {
 	iptables -L -n > record
 	n1=$(grep -En '^Chain INPUT' record | grep -Eo '^[^:]+')
@@ -292,14 +292,14 @@ function checkServerIP()
 #WSP 
 #--- FUNCTION ---------------------------------------------
 #
-#Name		: checkWsp
+#Name		: checkW
 #
 #Descript	: get all IPs in whitelist
 #
 #--- -------- ---------------------------------------------
-function checkWsp ()
+function checkW()
 {
-	PGPASSWORD=Polycom@12#$ psql -U postgres postgres -c 'select * from ca_wsp.whitelistswitch' > status
+	PGPASSWORD=lyou@12#$ psql -U postgres postgres -c 'select * from ca_wsp.whitelistswitch' > status
 	result=$(sed '3!d' status)
 	if [ $result -eq 0  ]
 	then
@@ -308,7 +308,7 @@ function checkWsp ()
         echo "whitelist is open"
 	fi
 	
-	PGPASSWORD=Polycom@12#$	psql -U postgres postgres -c 'select * from ca_wsp.whitelistconfig' > allIP
+	PGPASSWORD=lyou@12#$	psql -U postgres postgres -c 'select * from ca_wsp.whitelistconfig' > allIP
 	echo "IP in whitelist:"
 	grep -oP '([1-9]|[1-9][0-9]|[1-9][0-9][0-9])\.\d+\.\d+\.\d+\/\d+' allIP
 	
@@ -317,18 +317,18 @@ function checkWsp ()
 
 #--- FUNCTION ---------------------------------------------
 #
-#Name		: addWsp 
+#Name		: addW 
 #
 #Descript	: add IP to whitelist 
 #
 #--- -------- ---------------------------------------------
-function addWsp ()
+function addW()
 {
 	echo "input IP. format: x.x.x.x/x"
 	read IP
 	if [[ $IP =~ ^([0-9]+\.){3}[0-9]+/[0-9]+$ ]]
 	then		
-		PGPASSWORD=Polycom@12#$	psql -U postgres postgres -qc "insert into ca_wsp.whitelistconfig values('$IP')"
+		PGPASSWORD=lyou@12#$	psql -U postgres postgres -qc "insert into ca_wsp.whitelistconfig values('$IP')"
 		if [[ $? -eq 0 ]]
 		then 
 			echo success
@@ -343,14 +343,14 @@ function addWsp ()
 
 #--- FUNCTION ---------------------------------------------
 #
-#Name		: delWsp 
+#Name		: delW 
 #
 #Descript	: remove specified IP from whitelist 
 #
 #--- -------- ---------------------------------------------
-function delWsp ()
+function delW()
 {
-	PGPASSWORD=Polycom@12#$	psql -U postgres postgres -c 'select * from ca_wsp.whitelistconfig' > content
+	PGPASSWORD=lyou@12#$	psql -U postgres postgres -c 'select * from ca_wsp.whitelistconfig' > content
 	cat content | awk '{print $1}' | grep -E '^[0-9]+' > iplist
 	
 	count=$(cat iplist | wc -l) 
@@ -362,7 +362,7 @@ function delWsp ()
 	then 	
 		if grep -qnx "$IP" iplist 
 		then
-			PGPASSWORD=Polycom@12#$	psql -U postgres postgres -qc "delete from ca_wsp.whitelistconfig where subnet like '%$IP%'"
+			PGPASSWORD=lyou@12#$	psql -U postgres postgres -qc "delete from ca_wsp.whitelistconfig where subnet like '%$IP%'"
 			if [[ $? -eq 0 ]]
 			then 
 				echo success
@@ -383,15 +383,15 @@ function delWsp ()
 
 #--- FUNCTION ---------------------------------------------
 #
-#Name		: enableWsp 
+#Name		: enableW 
 #
 #Descript	: enable whitelist function 
 #
 #--- -------- ---------------------------------------------
-function enableWsp()
+function enableW()
 {
 	
-	PGPASSWORD=Polycom@12#$ psql -U postgres postgres -qc "update ca_wsp.whitelistswitch set enableflag='1'"
+	PGPASSWORD=lyou@12#$ psql -U postgres postgres -qc "update ca_wsp.whitelistswitch set enableflag='1'"
 	if [[ $? -eq 0 ]]
 	then 
 		echo success
@@ -399,9 +399,9 @@ function enableWsp()
 		echo fail
 	fi
 }
-function disableWsp()
+function disableW()
 {
-	PGPASSWORD=Polycom@12#$ psql -U postgres postgres -qc "update ca_wsp.whitelistswitch set enableflag='0'"
+	PGPASSWORD=lyou@12#$ psql -U postgres postgres -qc "update ca_wsp.whitelistswitch set enableflag='0'"
 	if [[ $? -eq 0 ]]
 	then 
 		echo success
@@ -426,18 +426,18 @@ fi
 
 
 
-if [ -d "/opt/polycom/mea" ];
+if [ -d "/opt/lyou/m" ];
 then
-	if [ -f /opt/polycom/mea/system-utils/whitelist-rules/rules ] && [ ! -f /opt/polycom/mea/system-utils/whitelist-rules/flag ]; 
+	if [ -f /opt/lyou/m/system-utils/whitelist-rules/rules ] && [ ! -f /opt/lyou/m/system-utils/whitelist-rules/flag ]; 
 	then 
-		iptables-restore < /opt/polycom/mea/system-utils/whitelist-rules/rules
-		touch /opt/polycom/mea/system-utils/whitelist-rules/flag
-#		sed 's/"//g' /opt/polycom/caxis/restrictedshell/utils/whitelist/rules > /opt/polycom/caxis/restrictedshell/utils/whitelist/RULES
-#		sed 's/\\n/$/g' /opt/polycom/caxis/restrictedshell/utils/whitelist/RULES > /opt/polycom/caxis/restrictedshell/utils/whitelist/RULESCOPY
-#		awk 'BEGIN{FS="$"}{for(i=1;i<NF;i++){print $i}}' /opt/polycom/caxis/restrictedshell/utils/whitelist/RULESCOPY > /opt/polycom/caxis/restrictedshell/utils/whitelist/ipta
-#		iptables-restore < /opt/polycom/caxis/restrictedshell/utils/whitelist/ipta
-#		rm -rf /opt/polycom/caxis/restrictedshell/utils/whitelist/rules /opt/polycom/caxis/restrictedshell/utils/whitelist/RULES /opt/polycom/caxis/restrictedshell/utils/whitelist/RULESCOPY /opt/polycom/caxis/restrictedshell/utils/whitelist/ipta
-#		touch /opt/polycom/caxis/restrictedshell/utils/whitelist/flag
+		iptables-restore < /opt/lyou/m/system-utils/whitelist-rules/rules
+		touch /opt/lyou/m/system-utils/whitelist-rules/flag
+#		sed 's/"//g' /opt/lyou/caxis/restrictedshell/utils/whitelist/rules > /opt/lyou/caxis/restrictedshell/utils/whitelist/RULES
+#		sed 's/\\n/$/g' /opt/lyou/caxis/restrictedshell/utils/whitelist/RULES > /opt/lyou/caxis/restrictedshell/utils/whitelist/RULESCOPY
+#		awk 'BEGIN{FS="$"}{for(i=1;i<NF;i++){print $i}}' /opt/lyou/caxis/restrictedshell/utils/whitelist/RULESCOPY > /opt/lyou/caxis/restrictedshell/utils/whitelist/ipta
+#		iptables-restore < /opt/lyou/caxis/restrictedshell/utils/whitelist/ipta
+#		rm -rf /opt/lyou/caxis/restrictedshell/utils/whitelist/rules /opt/lyou/caxis/restrictedshell/utils/whitelist/RULES /opt/lyou/caxis/restrictedshell/utils/whitelist/RULESCOPY /opt/lyou/caxis/restrictedshell/utils/whitelist/ipta
+#		touch /opt/lyou/caxis/restrictedshell/utils/whitelist/flag
 
 	fi
 	#get server IP	
@@ -448,22 +448,22 @@ then
 
 	case $1 in
 		add)
-			addMea
+			addM
 			;;
 		show)
-			listMea $serverIP $localhostIP
+			listM $serverIP $localhostIP
 			;;
 		delete)
-			delMea $serverIP $localhostIP
+			delM $serverIP $localhostIP
 			;;
 		enable)
-			enableMea
+			enableM
 			;;
 		disable)
-			disableMea
+			disableM
 			;;
 		reset)
-			resetMea
+			resetM
 			;;
 		*)
 			echo "invalid input"
@@ -486,8 +486,8 @@ then
 	fi
 	
 
-	iptables-save > /opt/polycom/mea/system-utils/whitelist-rules/rules
-	chmod a+rwx /opt/polycom/mea/system-utils/whitelist-rules/rules
+	iptables-save > /opt/lyou/mea/system-utils/whitelist-rules/rules
+	chmod a+rwx /opt/lyou/mea/system-utils/whitelist-rules/rules
 	service iptables save > sis
 	rm -rf sis
 	
@@ -496,19 +496,19 @@ then
 else
 	case $1 in
 		add)
-			addWsp
+			addW
 			;;
 		show)
-			checkWsp
+			checkW
 			;;
 		delete)
-			delWsp
+			delW
 			;;
 		enable)
-			enableWsp
+			enableW
 			;;
 		disable)
-			disableWsp
+			disableW
 			;;
 		*)
 			echo "invalid input"
