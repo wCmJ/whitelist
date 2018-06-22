@@ -1,0 +1,79 @@
+When packages get into Firewall, it will be received by drive program if MAC address matchs. then decide to send to local program or forward to other machine or others.
+
+Step（步骤）	    Table（表）	    Chain（链）	    Comment（注释）
+1	 	 	                                            在线路上传输(比如，Internet)
+2	 	 	                                            进入接口 (比如， eth0)
+3	               mangle	          PREROUTING	    这个链用来mangle数据包，比如改变TOS等
+4	               nat	            PREROUTING	    这个链主要用来做DNAT。不要在这个链做过虑操作，因为某 些情况下包会溜过去。
+5	 	 	                                            路由判断，比如，包是发往本地的，还是要转发的。
+6	               mangle	          INPUT	          在路由之后，被送往本地程序之前，mangle数据包。
+7	               filter	          INPUT	          所有以本地为目的的包都要经过这个链，不管它们从哪儿 来，对这些包的过滤条件就设在这里。
+8	 	 	                                            到达本地程序了(比如，服务程序或客户程序)
+
+
+
+PREROUTING  -->   INPUT
+OUTPUT      -->   POSTROUTING
+PREROUTING  -->   FORWARD   -->  POSTROUTING
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
