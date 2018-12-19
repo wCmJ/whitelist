@@ -17,13 +17,25 @@ OUTPUT      -->   POSTROUTING
 PREROUTING  -->   FORWARD   -->  POSTROUTING
 
 
+                                    table
+chain               filter          nat             mangle
+INPUT                 y                               y
+FORWARD               y                               y
+OUTPUT                y              y                y
+PREROUNTING                          y                y
+POSTROUNTING                         y                y
 
+jump by nat:
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-dest 192.168.1.10
 
+jump by nat for output data:
+iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-dest 192.168.1.100:8080
 
+masquerade:
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
-
-
-
+hide source IP address:
+iptables -t nat -A POSTROUTING -j SNAT --to-soure 1.2.3.4
 
 
 
